@@ -15,6 +15,7 @@ Metadata:
               - EnvTimeToSearch
               - EnvRegions
               - EnvEventTypeCategories
+              - EnvServices
           - Label:
               default: 'Slack WebHook'
             Parameters:
@@ -28,6 +29,10 @@ Metadata:
             default: 'Search Back'
           EnvRegions:
             default: 'Regions'
+          EnvEventTypeCategories:
+            default: 'Event Type Categories'
+          EnvServices:
+            default: 'Services'
           SlackURL:
             default: 'SlackURL'
 Parameters:
@@ -45,7 +50,10 @@ Parameters:
         Description: List of specific regions you would like to be alerted on. (i.e. 'us-east-1','us-east-2'). If left blank it will alert on all regions
         Type: String
     EnvEventTypeCategories:
-        Description: List of specific event type categories you would like to be alerted on. (i.e. 'issue', 'accountNotification', 'scheduledChange'). If left blank it will alert on all categories.
+        Description: List of specific event type categories you would like to be alerted on. (i.e. 'issue','accountNotification','scheduledChange'). If left blank it will alert on all categories.
+        Type: String
+    EnvServices:
+        Description: List of specific services you would like to be alerted on. (i.e. 'EC2','RDS','S3'). If left blank it will alert on all services.
         Type: String
     S3LambdaCodeBucket:
         Description: The S3 bucket name that contains the healthapi-slack-v0.0.0.zip lambda package (needs to be in same region you're launching this in)
@@ -232,6 +240,7 @@ Resources:
                     regions: !Ref EnvRegions
                     searchback: !Ref EnvTimeToSearch
                     eventcategories: !Ref EnvEventTypeCategories
+                    services: !Ref EnvServices
                     ddbTable: !Ref HealthIssuesTable
                     encryptedWebHook: !Ref KMSCustomResource         
     HealthScheduledRule:

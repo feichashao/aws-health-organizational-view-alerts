@@ -145,17 +145,23 @@ def lambda_handler(event, context):
     intHours = int(intHours)*3600
     dictRegions = os.environ['regions']
     dictEventCategories = os.environ['eventcategories']
+    dictServices = os.environ['services']
     encryptedWebHook = os.environ['encryptedWebHook']
     ddbTable = os.environ['ddbTable']
     awsRegion = os.environ['AWS_DEFAULT_REGION']
     
+    strFilter = {}
     if dictRegions != "":
         dictRegions = dictRegions.replace("'","")
-        dictRegions = list(dictRegions.split(",")) 
+        strFilter['regions'] = list(dictRegions.split(","))
     
     if dictEventCategories != "":
         dictEventCategories = dictEventCategories.replace("'","")
-        dictEventCategories = list(dictEventCategories.split(","))
+        strFilter['eventTypeCategories'] = list(dictEventCategories.split(","))
+
+    if dictServices != "":
+        dictServices = dictServices.replace("'","")
+        strFilter['services'] = list(dictServices.split(","))
 
     # set standard date time format used throughout
     strDTMFormat2 = "%Y-%m-%d %H:%M:%S"
@@ -179,14 +185,6 @@ def lambda_handler(event, context):
     decodedWebHook = "https://" + string_response
 
     HealthIssuesTable = dynamodb.Table(ddbTable)
-
-
-    strFilter = {}
-    if dictRegions != "":
-        strFilter['regions'] = dictRegions
-
-    if dictEventCategories != "":
-        strFilter['eventTypeCategories'] = dictEventCategories
 
     event_paginator = awshealth.get_paginator('describe_events_for_organization')
     event_page_iterator = event_paginator.paginate(filter=strFilter)
